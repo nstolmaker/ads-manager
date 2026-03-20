@@ -1,0 +1,26 @@
+{
+  "name": "ads-manager",
+  "version": "0.1.0",
+  "description": "AI-driven Google Ads campaign optimizer",
+  "type": "module",
+  "scripts": {
+    "db:init": "tsx src/db/init.ts",
+    "dev": "tsx src/scheduler.ts",
+    "webhook": "tsx src/discord/webhook.ts",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0",
+    "dotenv": "^16.4.7",
+    "express": "^4.18.2",
+    "google-ads-api": "^16.0.0",
+    "pg": "^8.14.1"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.13.14",
+    "@types/pg": "^8.11.11",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.2"
+  }
+}
