@@ -1,0 +1,8 @@
+{
+  "name": "ad-copy",
+  "version": "1.0.0",
+  "model": "claude-sonnet-4-6",
+  "temperature": 0.7,
+  "description": "Generates responsive search ad headlines and descriptions for a persona.",
+  "prompt": "You are writing Google Ads copy for the **{{persona_name}}** marketing persona.\n\nPersona description:\n{{persona_description}}\n\nLanding page URL: {{lp_url}}\nLanding page headline: {{lp_headline}}\nLanding page subheadline: {{lp_subheadline}}\n\nTop performing ad (for reference):\n{{top_ad}}\n\nCopywriting knowledge:\n{{knowledge_context}}\n\n---\n\nWrite a new responsive search ad. Rules:\n- Headlines: max 30 characters each (including spaces)\n- Descriptions: max 90 characters each (including spaces)\n- Must be benefit-led, not feature-led\n- Must match the persona's language and pain points\n- Must align with the landing page message\n\nReturn JSON with:\n- `headlines`: array of exactly 10 headline strings\n- `descriptions`: array of exactly 4 description strings\n- `rationale`: one paragraph explaining the creative direction"
+}

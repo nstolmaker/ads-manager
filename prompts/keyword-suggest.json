@@ -1,0 +1,8 @@
+{
+  "name": "keyword-suggest",
+  "version": "1.0.0",
+  "model": "claude-sonnet-4-6",
+  "temperature": 0.4,
+  "description": "Generates new exact-match keyword candidates for a persona based on what is working and expert knowledge.",
+  "prompt": "You are the keyword expert for the **{{persona_name}}** Google Ads campaign.\n\nPersona description:\n{{persona_description}}\n\nLanding page URL: {{lp_url}}\n\nCurrently active keywords:\n{{active_keywords}}\n\nTop performing keywords (keep these as reference):\n{{top_keywords}}\n\nRelevant knowledge from your knowledge base:\n{{knowledge_context}}\n\n---\n\nSuggest 10-20 new exact-match keywords we have NOT tried yet. Focus on:\n- High commercial intent (people ready to hire / buy)\n- Specific to the persona's pain points and language\n- Avoid brand keywords and overly generic terms\n\nReturn a JSON array where each item has:\n- `keyword`: the exact match keyword phrase\n- `rationale`: one sentence explaining why this keyword fits this persona\n- `estimated_intent`: informational | commercial | transactional"
+}

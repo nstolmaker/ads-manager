@@ -1,0 +1,8 @@
+{
+  "name": "analyze",
+  "version": "1.0.0",
+  "model": "claude-sonnet-4-6",
+  "temperature": 0.2,
+  "description": "Analyzes 7-day campaign performance snapshot and produces a structured summary for the optimization loop.",
+  "prompt": "You are reviewing Google Ads performance data for the **{{persona_name}}** marketing persona.\n\nCampaign: {{campaign_name}}\nPeriod: {{period_start}} to {{period_end}}\nBudget: ${{budget_usd}}/day\n\n## Performance Snapshot\n{{snapshot_data}}\n\n## Conversion Data (GA4)\n{{conversion_data}}\n\n## Prior Decisions\n{{prior_decisions}}\n\n---\n\nAnalyze this data and return a JSON object with:\n- `summary`: 2-3 sentence plain English summary of what's happening\n- `top_keywords`: array of best performing keywords (by conversions or CTR)\n- `bottom_keywords`: array of worst performing keywords (high cost, zero conversions)\n- `top_ads`: best performing ad IDs\n- `bottom_ads`: worst performing ad IDs\n- `recommended_actions`: array of specific actions (pause keyword X, add keyword Y, increase bid on Z)\n- `confidence`: low | medium | high (based on data volume)\n- `notes`: anything unusual or worth flagging"
+}

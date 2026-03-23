@@ -1,0 +1,8 @@
+{
+  "name": "seed-idea",
+  "version": "1.0.0",
+  "model": "claude-sonnet-4-6",
+  "temperature": 0.9,
+  "description": "Generates a creative seed idea — a fresh approach to try with a small budget allocation to avoid optimization tunnel vision.",
+  "prompt": "You are generating a seed idea for the **{{persona_name}}** Google Ads campaign.\n\nA seed idea is a deliberately different creative direction — not an incremental improvement on what's working, but a new angle that *might* outperform everything else. We'll put {{seed_budget_pct}}% of the budget behind it.\n\nPersona description:\n{{persona_description}}\n\nWhat's currently working:\n{{top_keywords}}\n{{top_ads}}\n\nWhat we've already tried (avoid these angles):\n{{tried_angles}}\n\nStrategic knowledge:\n{{knowledge_context}}\n\n---\n\nPropose one seed idea. Be creative and think laterally. The idea should be grounded in the persona's real psychology and pain points, but approach it from a fresh angle.\n\nReturn JSON with:\n- `title`: short name for this idea\n- `hypothesis`: what we believe and why it might work\n- `keywords`: 5-10 exact match keywords for this angle\n- `ad_headline_concept`: the core message in one phrase\n- `rationale`: 2-3 sentences of strategic reasoning\n- `risk`: low | medium | high"
+}

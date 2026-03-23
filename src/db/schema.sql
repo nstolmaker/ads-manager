@@ -88,6 +88,21 @@ CREATE TABLE IF NOT EXISTS conversion_events (
   occurred_at     TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+-- Book/knowledge embeddings for expert agents (PGvector)
+CREATE EXTENSION IF NOT EXISTS vector;
+
+CREATE TABLE IF NOT EXISTS embeddings (
+  id             SERIAL PRIMARY KEY,
+  source         TEXT NOT NULL,          -- e.g. 'obviously-awesome', 'building-a-storybrand'
+  knowledge_type TEXT NOT NULL,          -- e.g. 'keywords', 'copywriting', 'landing-pages', 'strategy'
+  chunk          TEXT NOT NULL,          -- raw text chunk
+  embedding      vector(1536),           -- ada-002 / text-embedding-3-small
+  metadata       JSONB,                  -- page number, chapter, etc.
+  created_at     TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_embeddings_knowledge_type ON embeddings(knowledge_type);
+
 -- Indexes
 CREATE INDEX IF NOT EXISTS idx_keyword_snapshots_persona_date ON keyword_snapshots(persona_id, snapshot_date);
 CREATE INDEX IF NOT EXISTS idx_ad_snapshots_persona_date ON ad_snapshots(persona_id, snapshot_date);
