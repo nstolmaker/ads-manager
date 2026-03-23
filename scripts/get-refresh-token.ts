@@ -4,19 +4,20 @@
  * One-time OAuth flow to get a Google Ads refresh token.
  * Run: npx tsx scripts/get-refresh-token.ts
  *
- * 1. Opens your browser to Google's OAuth consent screen
- * 2. Listens on localhost:8080 for the callback
- * 3. Exchanges the auth code for tokens
- * 4. Prints the refresh token — paste it into your .env
+ * Works with Desktop app OAuth clients (no redirect URI registration needed).
+ * 1. Opens browser to Google consent screen
+ * 2. Google redirects to localhost — browser shows "connection refused", that's fine
+ * 3. Copy the full URL from your browser's address bar and paste it here
+ * 4. Script extracts the code and exchanges it for a refresh token
  */
 
-import http from 'http';
 import { exec } from 'child_process';
+import * as readline from 'readline';
 import 'dotenv/config';
 
 const CLIENT_ID = process.env.GOOGLE_ADS_CLIENT_ID!;
 const CLIENT_SECRET = process.env.GOOGLE_ADS_CLIENT_SECRET!;
-const REDIRECT_URI = 'http://localhost:8080/oauth/callback';
+const REDIRECT_URI = 'http://localhost';
 const SCOPES = 'https://www.googleapis.com/auth/adwords';
 
 if (!CLIENT_ID || !CLIENT_SECRET) {
@@ -34,38 +35,34 @@ authUrl.searchParams.set('prompt', 'consent'); // forces refresh_token to be ret
 
 console.log('\n🔐 Google Ads OAuth Flow');
 console.log('Opening browser...\n');
-console.log('If browser does not open, visit:\n', authUrl.toString(), '\n');
 
-// Open browser (Windows)
 exec(`start "" "${authUrl.toString()}"`);
 
-// Local callback server
-const server = http.createServer(async (req, res) => {
-  if (!req.url?.startsWith('/oauth/callback')) {
-    res.end('Not found');
-    return;
-  }
+console.log('After you approve access, your browser will redirect to localhost');
+console.log('and show a "connection refused" error — that\'s expected.\n');
+console.log('Copy the FULL URL from your browser address bar and paste it below.\n');
 
-  const url = new URL(req.url, 'http://localhost:8080');
-  const code = url.searchParams.get('code');
-  const error = url.searchParams.get('error');
+const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
 
-  if (error) {
-    res.end(`<h2>Error: ${error}</h2>`);
-    console.error('\n❌ OAuth error:', error);
-    server.close();
-    return;
+rl.question('Paste the full redirect URL here: ', async (input) => {
+  rl.close();
+
+  let code: string | null = null;
+  try {
+    const url = new URL(input.trim());
+    code = url.searchParams.get('code');
+  } catch {
+    console.error('❌ Could not parse URL. Make sure you pasted the full URL.');
+    process.exit(1);
   }
 
   if (!code) {
-    res.end('<h2>No code received</h2>');
-    server.close();
-    return;
+    console.error('❌ No "code" parameter found in URL.');
+    process.exit(1);
   }
 
-  console.log('✅ Auth code received, exchanging for tokens...');
+  console.log('\n✅ Code received, exchanging for tokens...');
 
-  // Exchange code for tokens
   const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -81,13 +78,9 @@ const server = http.createServer(async (req, res) => {
   const tokens = await tokenRes.json() as any;
 
   if (tokens.error) {
-    res.end(`<h2>Token exchange failed: ${tokens.error_description}</h2>`);
-    console.error('\n❌ Token exchange failed:', tokens);
-    server.close();
-    return;
+    console.error('\n❌ Token exchange failed:', tokens.error_description || tokens.error);
+    process.exit(1);
   }
-
-  res.end('<h2>✅ Success! You can close this tab and check your terminal.</h2>');
 
   console.log('\n✅ Got tokens!\n');
   console.log('─'.repeat(60));
@@ -96,15 +89,8 @@ const server = http.createServer(async (req, res) => {
   console.log('\nAdd the above line to your .env file.\n');
 
   if (!tokens.refresh_token) {
-    console.warn('⚠️  No refresh_token returned. This can happen if you already');
-    console.warn('   authorized this app. Revoke access at:');
-    console.warn('   https://myaccount.google.com/permissions');
+    console.warn('⚠️  No refresh_token returned. If you previously authorized this app,');
+    console.warn('   revoke it at: https://myaccount.google.com/permissions');
     console.warn('   Then run this script again.\n');
   }
-
-  server.close();
-});
-
-server.listen(8080, () => {
-  console.log('Listening on http://localhost:8080 for OAuth callback...');
 });
