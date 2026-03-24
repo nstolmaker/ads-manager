@@ -63,10 +63,7 @@ export async function notifyOptimizationRun(opts: {
   personaName: string;
   summary: string;
   recommendations: any[];
-  seedIdea?: any;
-  webhookUrl: string;
-  webhookSecret: string;
-}): Promise<string> {
+  seedIdea?: any;}): Promise<string> {
   const recCount = opts.recommendations.length;
   const seedLine = opts.seedIdea
     ? `\n🌱 **Seed idea:** ${opts.seedIdea.title}`
@@ -82,9 +79,10 @@ export async function notifyOptimizationRun(opts: {
     `Reply with your decision. I'll interpret it and execute approved changes.`,
     ``,
     `\`\`\`json`,
-    `{ "run_id": ${opts.runId}, "webhook": "${opts.webhookUrl}", "secret": "${opts.webhookSecret}" }`,
+    `{ "run_id": ${opts.runId} }`,
     `\`\`\``,
   ].join('\n');
 
   return notify({ content });
 }
+
