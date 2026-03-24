@@ -25,6 +25,7 @@ import {
   pauseKeywords,
 } from '../google-ads/keywords.js';
 import { getCustomer } from '../google-ads/client.js';
+import { getKeywordMetrics } from '../google-ads/keyword-planner.js';
 import { query } from '../db/pool.js';
 import { searchKnowledge } from '../knowledge/search.js';
 import { listSources, deleteSource } from '../knowledge/sources.js';
@@ -350,6 +351,34 @@ export function createServer(): McpServer {
   );
 
   
+
+  // -- Keyword Planner tool ----------------------------------------
+
+  server.registerTool(
+    'keyword_planner',
+    {
+      description: 'Get historical search volume, competition level, and CPC bid range for a list of keywords. Use before add_keywords to prioritize by ROI.',
+      inputSchema: {
+        keywords: z.array(z.string()).describe('Keywords to look up — plain text, no match type brackets'),
+      },
+    },
+    async ({ keywords }) => {
+      try {
+        const metrics = await getKeywordMetrics(keywords);
+        metrics.sort((a, b) => b.avgMonthlySearches - a.avgMonthlySearches);
+        const table = metrics.map(m => ({
+          keyword: m.keyword,
+          monthlySearches: m.avgMonthlySearches,
+          competition: m.competition,
+          competitionIndex: m.competitionIndex,
+          cpcRangeUsd: `$${m.lowTopOfPageBidUsd}--$${m.highTopOfPageBidUsd}`,
+        }));
+        return { content: [{ type: 'text', text: JSON.stringify(table, null, 2) }] };
+      } catch (err: any) {
+        return { content: [{ type: 'text', text: `Error fetching keyword metrics: ${err.message}` }], isError: true };
+      }
+    },
+  );
   // -- Persona tools ---------------------------------------------------------
 
   server.registerTool(
@@ -476,4 +505,6 @@ export function createServer(): McpServer {
 
   return server;
 }
+
+
 
