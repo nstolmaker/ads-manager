@@ -1,6 +1,8 @@
 import fs from 'fs';
 import path from 'path';
-import pdfParse from 'pdf-parse';
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+const pdfParse = require('pdf-parse');
 import { RecursiveCharacterTextSplitter } from '@langchain/textsplitters';
 import { query } from '../db/pool.js';
 import { generateEmbedding } from './embedding.js';
