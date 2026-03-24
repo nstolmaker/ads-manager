@@ -3,7 +3,7 @@ import path from 'path';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 const pdfParse = require('pdf-parse');
-const EPub = require('epub');
+const { EPub } = require('epub');
 
 import { RecursiveCharacterTextSplitter } from '@langchain/textsplitters';
 import { query } from '../db/pool.js';
