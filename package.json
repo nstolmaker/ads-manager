@@ -10,19 +10,24 @@
     "webhook": "tsx src/discord/webhook.ts",
     "mcp": "tsx src/mcp/index.ts",
     "smoketest": "tsx src/mcp/smoketest.ts",
+    "knowledge-ui": "tsx src/knowledge/ui/server.ts",
     "build": "tsc"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.39.0",
+    "@langchain/textsplitters": "^1.0.1",
     "@modelcontextprotocol/sdk": "^1.27.1",
     "dotenv": "^16.4.7",
     "express": "^4.18.2",
     "google-ads-api": "^23.0.0",
+    "openai": "^6.32.0",
+    "pdf-parse": "^2.4.5",
     "pg": "^8.14.1"
   },
   "devDependencies": {
     "@types/express": "^5.0.0",
     "@types/node": "^22.13.14",
+    "@types/pdf-parse": "^1.1.5",
     "@types/pg": "^8.11.11",
     "tsx": "^4.19.3",
     "typescript": "^5.8.2"
