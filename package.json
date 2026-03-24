@@ -21,7 +21,7 @@
     "express": "^4.18.2",
     "google-ads-api": "^23.0.0",
     "openai": "^6.32.0",
-    "pdf-parse": "^2.4.5",
+    "pdf-parse": "^1.1.1",
     "pg": "^8.14.1"
   },
   "devDependencies": {
