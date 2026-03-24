@@ -6,6 +6,7 @@
 import express from 'express';
 import 'dotenv/config';
 import { query } from '../db/pool.js';
+import { executeRun } from '../optimizer/execute.js';
 
 const app = express();
 app.use(express.json());
@@ -15,11 +16,21 @@ const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET!;
 
 export interface ApprovalPayload {
   run_id: number;
-  action: 'approve' | 'reject' | 'approve_partial';
+  action: 'propose' | 'approve' | 'reject' | 'approve_partial';
+  recommendations?: any[];    // Claude posts these when proposing
   approved_items?: number[];  // indices of approved recommendations
   rejected_items?: number[];
-  notes?: string;             // Claude's interpretation notes
-  approved_by?: string;       // Discord username who approved
+  notes?: string;
+  approved_by?: string;
+}
+
+// Handle proposal (Claude posting recommendations before approval)
+async function handleProposal(runId: number, recommendations: any[]) {
+  await query(
+    `UPDATE optimization_runs SET recommendations = $1, status = 'pending' WHERE id = $2`,
+    [JSON.stringify(recommendations), runId],
+  );
+  console.log(`[webhook] Stored ${recommendations.length} recommendations for run #${runId}`);
 }
 
 app.get('/health', (_, res) => {
@@ -36,7 +47,13 @@ app.post('/webhook/response', async (req, res) => {
   res.sendStatus(200); // Respond immediately
 
   const payload = req.body as ApprovalPayload;
-  console.log(`[webhook] Received approval for run #${payload.run_id}: ${payload.action}`);
+  console.log(`[webhook] Received for run #${payload.run_id}: ${payload.action}`);
+
+  // Handle proposal — Claude storing recommendations
+  if (payload.action === 'propose' && payload.recommendations) {
+    await handleProposal(payload.run_id, payload.recommendations);
+    return;
+  }
 
   try {
     const status = payload.action === 'approve' ? 'approved'
@@ -51,8 +68,13 @@ app.post('/webhook/response', async (req, res) => {
     );
 
     if (status === 'approved') {
-      console.log(`[webhook] Run #${payload.run_id} approved — queuing execution`);
-      // TODO: trigger execute.ts
+      console.log(`[webhook] Run #${payload.run_id} approved — executing`);
+      executeRun({
+        runId: payload.run_id,
+        approvedIndices: payload.approved_items ?? [],
+        approvedBy: payload.approved_by || 'claude',
+        notes: payload.notes,
+      }).catch(e => console.error('[webhook] Execute error:', e.message));
     } else {
       console.log(`[webhook] Run #${payload.run_id} rejected`);
     }
