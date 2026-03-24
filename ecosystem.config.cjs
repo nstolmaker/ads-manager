@@ -3,8 +3,9 @@ module.exports = {
     {
       // Webhook server — always running, receives Claude's approval callbacks
       name: 'ads-webhook',
-      script: 'npx',
-      args: 'tsx src/discord/webhook.ts',
+      script: 'node_modules/tsx/dist/cli.mjs',
+      args: 'src/discord/webhook.ts',
+      interpreter: 'node',
       cwd: __dirname,
       watch: false,
       autorestart: true,
@@ -15,8 +16,9 @@ module.exports = {
     {
       // Optimization loop — runs every 7 days via cron
       name: 'ads-optimizer',
-      script: 'npx',
-      args: 'tsx src/scheduler.ts',
+      script: 'node_modules/tsx/dist/cli.mjs',
+      args: 'src/scheduler.ts',
+      interpreter: 'node',
       cwd: __dirname,
       watch: false,
       autorestart: false,  // One-shot per cron trigger
