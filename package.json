@@ -9,6 +9,7 @@
     "optimize": "tsx src/scheduler.ts",
     "webhook": "tsx src/discord/webhook.ts",
     "mcp": "tsx src/mcp/index.ts",
+    "smoketest": "tsx src/mcp/smoketest.ts",
     "build": "tsc"
   },
   "dependencies": {
