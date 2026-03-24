@@ -22,20 +22,22 @@ async function extractEpub(filePath: string): Promise<string> {
   const book = new EPub(filePath);
   await book.parse();
 
+  if (book.hasDRM()) {
+    throw new Error(`DRM-protected epub — cannot extract text: ${filePath}`);
+  }
+
   const chapterTexts = await Promise.all(
-    book.flow.map(
-      (ch: any) =>
-        new Promise<string>((res, rej) => {
-          book.getChapter(ch.id, (err: any, text: string) => {
-            if (err) return rej(err);
-            // Strip HTML tags
-            res(text.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim());
-          });
-        }),
-    ),
+    book.flow.map(async (ch: any) => {
+      try {
+        const html: string = await book.getChapter(ch.id);
+        return html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+      } catch {
+        return '';
+      }
+    }),
   );
 
-  return chapterTexts.join('\n\n');
+  return chapterTexts.filter(Boolean).join('\n\n');
 }
 
 async function extractText(filePath: string): Promise<string> {
