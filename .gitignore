@@ -1,5 +1,7 @@
 node_modules/
 dist/
+books/
 .env
 *.js.map
 src/*.env
+.DS_Store

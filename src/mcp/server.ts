@@ -25,6 +25,9 @@ import {
   pauseKeywords,
 } from '../google-ads/keywords.js';
 import { getCustomer } from '../google-ads/client.js';
+import { searchKnowledge } from '../knowledge/search.js';
+import { listSources, deleteSource } from '../knowledge/sources.js';
+import { scanAndIngest } from '../knowledge/ingest.js';
 
 const NOAH_DISCORD_ID = '626600779666423819';
 
@@ -267,6 +270,80 @@ export function createServer(): McpServer {
         return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
       } catch (err: any) {
         return { content: [{ type: 'text', text: `Error getting performance: ${err.message}` }], isError: true };
+      }
+    },
+  );
+
+  // ── Knowledge base tools ──────────────────────────────
+
+  server.registerTool(
+    'knowledge_search',
+    {
+      description: 'Search the knowledge base using semantic similarity',
+      inputSchema: {
+        query: z.string().describe('Search query text'),
+        knowledgeType: z.string().optional().describe('Filter by knowledge type (e.g. marketing, strategy)'),
+        limit: z.number().optional().default(5).describe('Max results to return'),
+      },
+    },
+    async ({ query, knowledgeType, limit }) => {
+      try {
+        const results = await searchKnowledge(query, knowledgeType, limit);
+        return { content: [{ type: 'text', text: JSON.stringify(results, null, 2) }] };
+      } catch (err: any) {
+        return { content: [{ type: 'text', text: `Error searching knowledge: ${err.message}` }], isError: true };
+      }
+    },
+  );
+
+  server.registerTool(
+    'knowledge_list_sources',
+    {
+      description: 'List all ingested knowledge base sources with chunk counts',
+    },
+    async () => {
+      try {
+        const sources = await listSources();
+        return { content: [{ type: 'text', text: JSON.stringify(sources, null, 2) }] };
+      } catch (err: any) {
+        return { content: [{ type: 'text', text: `Error listing sources: ${err.message}` }], isError: true };
+      }
+    },
+  );
+
+  server.registerTool(
+    'knowledge_ingest',
+    {
+      description: 'Scan the knowledge source directory and ingest all PDFs',
+      inputSchema: {
+        knowledgeType: z.string().describe('Knowledge type label for ingested content (e.g. marketing, strategy)'),
+      },
+    },
+    async ({ knowledgeType }) => {
+      try {
+        const sourceDir = process.env.KNOWLEDGE_SOURCE_DIR || './books';
+        const results = await scanAndIngest(sourceDir, knowledgeType);
+        return { content: [{ type: 'text', text: JSON.stringify(results, null, 2) }] };
+      } catch (err: any) {
+        return { content: [{ type: 'text', text: `Error ingesting knowledge: ${err.message}` }], isError: true };
+      }
+    },
+  );
+
+  server.registerTool(
+    'knowledge_delete_source',
+    {
+      description: 'Delete all embeddings for a given source',
+      inputSchema: {
+        source: z.string().describe('Source name to delete'),
+      },
+    },
+    async ({ source }) => {
+      try {
+        const deleted = await deleteSource(source);
+        return { content: [{ type: 'text', text: JSON.stringify({ source, deleted }) }] };
+      } catch (err: any) {
+        return { content: [{ type: 'text', text: `Error deleting source: ${err.message}` }], isError: true };
       }
     },
   );
