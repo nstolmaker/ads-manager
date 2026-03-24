@@ -3,6 +3,7 @@
  * Create, read, and manage campaigns per marketing persona
  */
 import { getCustomer } from './client.js';
+import { createBudgetRest, createCampaignRest } from './rest.js';
 import { query, queryOne } from '../db/pool.js';
 
 export interface CampaignConfig {
@@ -17,44 +18,20 @@ export interface CampaignConfig {
  * Returns the Google Ads campaign ID
  */
 export async function createCampaign(config: CampaignConfig): Promise<string> {
-  const customer = getCustomer();
+  // Use REST client — SDK v23 doesn't support contains_eu_political_advertising
+  // which Google's API requires for all new campaigns since Sep 2025
 
-  // 1. Create a campaign budget
-  const [budgetResult] = await customer.campaignBudgets.create([{
-    name: `${config.name} Budget`,
-    amount_micros: config.dailyBudgetMicros,
-    delivery_method: 'STANDARD',
-    explicitly_shared: false,
-  }]);
+  // 1. Create budget via REST
+  const budgetResourceName = await createBudgetRest(
+    `${config.name} Budget`,
+    config.dailyBudgetMicros,
+  );
 
-  const budgetResourceName = budgetResult.results?.[0]?.resource_name;
-  if (!budgetResourceName) throw new Error('Failed to create campaign budget');
-
-  // 2. Create the campaign
-  const [campaignResult] = await customer.campaigns.create([{
+  // 2. Create campaign via REST (passes containsEuPoliticalAdvertising: false)
+  const googleCampaignId = await createCampaignRest({
     name: config.name,
-    status: 'PAUSED', // Start paused — activate when ready
-    advertising_channel_type: 'SEARCH',
-    campaign_budget: budgetResourceName,
-    manual_cpc: {
-      enhanced_cpc_enabled: false,
-    },
-    network_settings: {
-      target_google_search: true,
-      target_search_network: true,
-      target_content_network: false,
-      target_partner_search_network: false,
-    },
-    geo_target_type_setting: {
-      positive_geo_target_type: 'PRESENCE_OR_INTEREST',
-    },
-  }]);
-
-  const campaignResourceName = campaignResult.results?.[0]?.resource_name;
-  if (!campaignResourceName) throw new Error('Failed to create campaign');
-
-  // Extract numeric campaign ID from resource name (customers/xxx/campaigns/yyy)
-  const googleCampaignId = campaignResourceName.split('/').pop()!;
+    budgetResourceName,
+  });
 
   // 3. Persist to DB
   const persona = await queryOne<{ id: number }>(
@@ -90,7 +67,7 @@ export async function createAdGroup(
 
   const campaignResourceName = `customers/${customerId}/campaigns/${googleCampaignId}`;
 
-  const [result] = await customer.adGroups.create([{
+  const result = await customer.adGroups.create([{
     name,
     status: 'ENABLED',
     campaign: campaignResourceName,
@@ -98,7 +75,7 @@ export async function createAdGroup(
     cpc_bid_micros: defaultCpcMicros,
   }]);
 
-  const adGroupResourceName = result.results?.[0]?.resource_name;
+  const adGroupResourceName = (result as any).results?.[0]?.resource_name;
   if (!adGroupResourceName) throw new Error('Failed to create ad group');
 
   const adGroupId = adGroupResourceName.split('/').pop()!;
