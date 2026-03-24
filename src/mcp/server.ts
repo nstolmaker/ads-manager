@@ -25,6 +25,7 @@ import {
   pauseKeywords,
 } from '../google-ads/keywords.js';
 import { getCustomer } from '../google-ads/client.js';
+import { query } from '../db/pool.js';
 import { searchKnowledge } from '../knowledge/search.js';
 import { listSources, deleteSource } from '../knowledge/sources.js';
 import { scanAndIngest } from '../knowledge/ingest.js';
@@ -348,5 +349,131 @@ export function createServer(): McpServer {
     },
   );
 
+  
+  // -- Persona tools ---------------------------------------------------------
+
+  server.registerTool(
+    'list_personas',
+    {
+      description: 'List all personas with their campaign IDs, budget, and data',
+    },
+    async () => {
+      try {
+        const rows = await query<any>(`
+          SELECT id, slug, name, lp_url, budget_floor_pct, status,
+                 google_campaign_id, data, created_at, updated_at
+          FROM personas
+          ORDER BY id
+        `);
+        return { content: [{ type: 'text', text: JSON.stringify(rows, null, 2) }] };
+      } catch (err: any) {
+        return { content: [{ type: 'text', text: `Error listing personas: ${err.message}` }], isError: true };
+      }
+    },
+  );
+
+  server.registerTool(
+    'get_persona',
+    {
+      description: 'Get a single persona by slug with full data',
+      inputSchema: {
+        slug: z.string().describe('Persona slug e.g. ai-department'),
+      },
+    },
+    async ({ slug }) => {
+      try {
+        const rows = await query<any>(
+          `SELECT id, slug, name, lp_url, budget_floor_pct, status,
+                  google_campaign_id, data, created_at, updated_at
+           FROM personas WHERE slug = $1`,
+          [slug],
+        );
+        if (rows.length === 0) {
+          return { content: [{ type: 'text', text: `Persona not found: ${slug}` }], isError: true };
+        }
+        return { content: [{ type: 'text', text: JSON.stringify(rows[0], null, 2) }] };
+      } catch (err: any) {
+        return { content: [{ type: 'text', text: `Error getting persona: ${err.message}` }], isError: true };
+      }
+    },
+  );
+
+  server.registerTool(
+    'create_persona',
+    {
+      description: 'Create a new persona in the database',
+      inputSchema: {
+        slug: z.string().describe('URL-safe unique identifier e.g. my-new-persona'),
+        name: z.string().describe('Human-readable persona name'),
+        lpUrl: z.string().describe('Landing page URL'),
+        data: z.string().describe('Persona context as JSON string — seed idea, pain points, audience, etc.'),
+        budgetFloorPct: z.number().optional().default(0.1).describe('Minimum budget share (0.1 = 10%)'),
+      },
+    },
+    async ({ slug, name, lpUrl, data: dataStr, budgetFloorPct }) => {
+      try {
+        const data = JSON.parse(dataStr);
+        const rows = await query<any>(
+          `INSERT INTO personas (slug, name, lp_url, budget_floor_pct, status, data)
+           VALUES ($1, $2, $3, $4, 'active', $5)
+           RETURNING id, slug, name`,
+          [slug, name, lpUrl, budgetFloorPct, JSON.stringify(data)],
+        );
+        logger.info(`Created persona: ${slug}`);
+        return { content: [{ type: 'text', text: JSON.stringify(rows[0], null, 2) }] };
+      } catch (err: any) {
+        return { content: [{ type: 'text', text: `Error creating persona: ${err.message}` }], isError: true };
+      }
+    },
+  );
+
+  server.registerTool(
+    'edit_persona',
+    {
+      description: 'Update fields on an existing persona. Only provided fields are updated.',
+      inputSchema: {
+        slug: z.string().describe('Persona slug to update'),
+        name: z.string().optional().describe('New human-readable name'),
+        lpUrl: z.string().optional().describe('New landing page URL'),
+        data: z.string().optional().describe('Updated persona context as JSON string'),
+        status: z.enum(['active', 'paused']).optional().describe('Persona status'),
+        budgetFloorPct: z.number().optional().describe('New minimum budget share'),
+        googleCampaignId: z.string().optional().describe('Link to a Google Ads campaign ID'),
+      },
+    },
+    async ({ slug, name, lpUrl, data: dataStr, status, budgetFloorPct, googleCampaignId }) => {
+      try {
+        const updates: string[] = ['updated_at = NOW()'];
+        const values: any[] = [];
+        let i = 1;
+
+        if (name)             { updates.push(`name = ${i++}`);               values.push(name); }
+        if (lpUrl)            { updates.push(`lp_url = ${i++}`);             values.push(lpUrl); }
+        if (dataStr)          { updates.push(`data = ${i++}`);               values.push(JSON.parse(dataStr)); }
+        if (status)           { updates.push(`status = ${i++}`);             values.push(status); }
+        if (budgetFloorPct !== undefined) { updates.push(`budget_floor_pct = ${i++}`); values.push(budgetFloorPct); }
+        if (googleCampaignId) { updates.push(`google_campaign_id = ${i++}`); values.push(googleCampaignId); }
+
+        if (values.length === 0) {
+          return { content: [{ type: 'text', text: 'No fields provided to update' }], isError: true };
+        }
+
+        values.push(slug);
+        const rows = await query<any>(
+          `UPDATE personas SET ${updates.join(', ')} WHERE slug = ${i} RETURNING id, slug, name, updated_at`,
+          values,
+        );
+        if (rows.length === 0) {
+          return { content: [{ type: 'text', text: `Persona not found: ${slug}` }], isError: true };
+        }
+        logger.info(`Updated persona: ${slug}`);
+        return { content: [{ type: 'text', text: JSON.stringify(rows[0], null, 2) }] };
+      } catch (err: any) {
+        return { content: [{ type: 'text', text: `Error editing persona: ${err.message}` }], isError: true };
+      }
+    },
+  );
+
   return server;
 }
+
