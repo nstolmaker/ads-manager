@@ -6,11 +6,14 @@
   "scripts": {
     "db:init": "tsx src/db/init.ts",
     "dev": "tsx src/scheduler.ts",
+    "optimize": "tsx src/scheduler.ts",
     "webhook": "tsx src/discord/webhook.ts",
+    "mcp": "tsx src/mcp/index.ts",
     "build": "tsc"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.39.0",
+    "@modelcontextprotocol/sdk": "^1.27.1",
     "dotenv": "^16.4.7",
     "express": "^4.18.2",
     "google-ads-api": "^23.0.0",
