@@ -19,30 +19,23 @@ async function extractPdf(filePath: string): Promise<string> {
 }
 
 async function extractEpub(filePath: string): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const book = new EPub(filePath);
-    book.on('error', reject);
-    book.on('end', async () => {
-      try {
-        const chapterTexts = await Promise.all(
-          book.flow.map(
-            (ch: any) =>
-              new Promise<string>((res, rej) => {
-                book.getChapter(ch.id, (err: any, text: string) => {
-                  if (err) return rej(err);
-                  // Strip HTML tags
-                  res(text.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim());
-                });
-              }),
-          ),
-        );
-        resolve(chapterTexts.join('\n\n'));
-      } catch (err) {
-        reject(err);
-      }
-    });
-    book.parse();
-  });
+  const book = new EPub(filePath);
+  await book.parse();
+
+  const chapterTexts = await Promise.all(
+    book.flow.map(
+      (ch: any) =>
+        new Promise<string>((res, rej) => {
+          book.getChapter(ch.id, (err: any, text: string) => {
+            if (err) return rej(err);
+            // Strip HTML tags
+            res(text.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim());
+          });
+        }),
+    ),
+  );
+
+  return chapterTexts.join('\n\n');
 }
 
 async function extractText(filePath: string): Promise<string> {
