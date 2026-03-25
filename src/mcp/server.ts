@@ -27,6 +27,7 @@ import {
 import { getCustomer } from '../google-ads/client.js';
 import { getKeywordMetrics } from '../google-ads/keyword-planner.js';
 import { getDomainPaidKeywords, getDomainPpcCompetitors } from '../google-ads/spyfu.js';
+import { ingestSuggestions } from '../knowledge/suggest.js';
 import { query } from '../db/pool.js';
 import { searchKnowledge } from '../knowledge/search.js';
 import { listSources, deleteSource } from '../knowledge/sources.js';
@@ -380,6 +381,28 @@ export function createServer(): McpServer {
       }
     },
   );
+  // -- Google Suggest ingest tool
+  server.registerTool(
+    'knowledge_ingest_suggest',
+    {
+      title: 'Ingest Google Suggest: Buyer Language',
+      description: 'Pulls Google Autocomplete suggestions for a seed keyword, filters to buyer-intent terms, and ingests them into the knowledge base as buyer_language chunks. Use this before keyword_brainstorm to populate the KB with real search language for a topic.',
+      inputSchema: {
+        seed: z.string().describe('Seed keyword to expand, e.g. "ai consulting for small business"'),
+        personaSlug: z.string().optional().describe('Optional persona slug to tag the results with (e.g. "ai-department")'),
+      },
+    },
+    async ({ seed, personaSlug }) => {
+      const result = await ingestSuggestions(seed, personaSlug);
+      return {
+        content: [{
+          type: 'text',
+          text: JSON.stringify(result, null, 2),
+        }],
+      };
+    }
+  );
+
   // -- SpyFu tools
   server.registerTool(
     'spyfu_domain_keywords',
@@ -549,6 +572,7 @@ export function createServer(): McpServer {
 
   return server;
 }
+
 
 
 
