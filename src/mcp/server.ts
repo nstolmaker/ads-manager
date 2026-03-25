@@ -26,6 +26,7 @@ import {
 } from '../google-ads/keywords.js';
 import { getCustomer } from '../google-ads/client.js';
 import { getKeywordMetrics } from '../google-ads/keyword-planner.js';
+import { getDomainPaidKeywords, getDomainPpcCompetitors } from '../google-ads/spyfu.js';
 import { query } from '../db/pool.js';
 import { searchKnowledge } from '../knowledge/search.js';
 import { listSources, deleteSource } from '../knowledge/sources.js';
@@ -379,6 +380,49 @@ export function createServer(): McpServer {
       }
     },
   );
+  // -- SpyFu tools
+  server.registerTool(
+    'spyfu_domain_keywords',
+    {
+      title: 'SpyFu: Domain Paid Keywords',
+      description: 'Returns the top PPC keywords a competitor domain is bidding on, sorted by search volume. Use this to discover what keywords competitors are spending money on.',
+      inputSchema: {
+        domain: z.string().describe('Competitor domain, e.g. "slalom.com"'),
+        limit: z.number().int().min(1).max(100).default(20).optional().describe('Number of keywords to return (default 20)'),
+      },
+    },
+    async ({ domain, limit = 20 }) => {
+      const result = await getDomainPaidKeywords(domain, limit);
+      return {
+        content: [{
+          type: 'text',
+          text: JSON.stringify(result, null, 2),
+        }],
+      };
+    }
+  );
+
+  server.registerTool(
+    'spyfu_domain_competitors',
+    {
+      title: 'SpyFu: Domain PPC Competitors',
+      description: 'Returns the top PPC competitors for a domain — other domains bidding on overlapping paid keywords. Use this to discover the competitive landscape around a given domain.',
+      inputSchema: {
+        domain: z.string().describe('Domain to find competitors for, e.g. "slalom.com"'),
+        limit: z.number().int().min(1).max(100).default(20).optional().describe('Number of competitors to return (default 20)'),
+      },
+    },
+    async ({ domain, limit = 20 }) => {
+      const result = await getDomainPpcCompetitors(domain, limit);
+      return {
+        content: [{
+          type: 'text',
+          text: JSON.stringify(result, null, 2),
+        }],
+      };
+    }
+  );
+
   // -- Persona tools ---------------------------------------------------------
 
   server.registerTool(
@@ -505,6 +549,8 @@ export function createServer(): McpServer {
 
   return server;
 }
+
+
 
 
 
