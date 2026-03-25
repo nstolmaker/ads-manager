@@ -8,7 +8,7 @@ import { query } from "../db/pool.js";
 import { generateEmbedding } from "./embedding.js";
 import { logger } from "../utils/logger.js";
 
-const RATE_LIMIT_MS = 400; // ~2.5 req/sec — polite
+const RATE_LIMIT_MS = 1100; // ~1 req/sec — conservative, safe for batch runs
 const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
 
 // Expanders: alpha + common intent prefixes
@@ -18,11 +18,14 @@ const INTENT_PREFIXES = [
   "why", "best", "vs", "without", "small business", "startup", "freelance",
 ];
 
-// Terms that signal non-buyer intent (jobs, education, news, geography noise)
+// Terms that signal non-buyer intent (jobs, education, platforms, geo noise)
 const NOISE_PATTERNS = [
   /\b(salary|salaries|jobs?|careers?|hiring|internship|interview|certification|course|degree|training|bootcamp|reddit|linkedin|youtube|pdf|template|logo|icon|image|naics|meaning|definition|wikipedia)\b/i,
-  /\b(india|uk|australia|canada|london|dubai|singapore|toronto|sydney|ireland|germany|france|pakistan|nigeria|kenya|zarobki|quebec|oslo|nz|zealand)\b/i,
+  /\b(india|uk|australia|canada|london|dubai|singapore|toronto|sydney|ireland|germany|france|pakistan|nigeria|kenya|zarobki|quebec|oslo|nz|zealand|hong.kong|scotland|sweden|europe|federal|government|defence|department.of.war)\b/i,
   /\b(reviews?|yelp|glassdoor|indeed|salary\.com)\b/i,
+  /\b(udemy|coursera|harvard|mit|kellogg|northwestern|stanford|hbr|harvard.business|free.download|trailhead|salesforce|power.automate|azure.logic|copilot.studio|langchain|llm.apps|rockwell|apex|abpd)\b/i,
+  /\b(statistics|change.management|stock.market|forex|trading|roulette|cryptocurrency|investing|b.to.b|kya.hota)\b/i,
+  /\b(how.to.adopt.a.child|how.to.become|how.to.start.a|how.to.build|abbreviation|guidelines|what.makes.a.small.business.small)\b/i,
 ];
 
 function isBuyerIntent(term: string): boolean {
@@ -107,3 +110,5 @@ export async function ingestSuggestions(
   logger.info(`[suggest] "${seed}": ${inserted} inserted, ${skipped} skipped`);
   return { seed, total: all.size, buyerIntent: buyerTerms.length, inserted, skipped };
 }
+
+
