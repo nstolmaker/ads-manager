@@ -9,9 +9,17 @@ const customerId = () => process.env.TEST === '1'
   ? process.env.TEST_GOOGLE_ADS_ACCOUNT_CUSTOMER_ID!
   : process.env.GOOGLE_ADS_ACCOUNT_CUSTOMER_ID!;
 
+export interface RSAHeadline {
+  text: string;
+  pinnedField?: "HEADLINE_1" | "HEADLINE_2" | "HEADLINE_3";
+}
+export interface RSADescription {
+  text: string;
+  pinnedField?: "DESCRIPTION_1" | "DESCRIPTION_2";
+}
 export interface RSASpec {
-  headlines: string[];    // 3-15 headlines, max 30 chars each
-  descriptions: string[]; // 2-4 descriptions, max 90 chars each
+  headlines: (string | RSAHeadline)[];
+  descriptions: (string | RSADescription)[];
   finalUrl: string;
 }
 
@@ -33,8 +41,12 @@ export async function createResponsiveSearchAd(
         ad: {
           finalUrls: [spec.finalUrl],
           responsiveSearchAd: {
-            headlines: spec.headlines.map(text => ({ text })),
-            descriptions: spec.descriptions.map(text => ({ text })),
+            headlines: spec.headlines.map(h =>
+              typeof h === "string" ? { text: h } : { text: h.text, ...(h.pinnedField ? { pinnedField: h.pinnedField } : {}) }
+            ),
+            descriptions: spec.descriptions.map(d =>
+              typeof d === "string" ? { text: d } : { text: d.text, ...(d.pinnedField ? { pinnedField: d.pinnedField } : {}) }
+            ),
           },
         },
       },
@@ -96,3 +108,4 @@ export async function updateCampaignBudget(
 
   console.log(`[ads] Updated budget for campaign ${googleCampaignId}: $${(newDailyBudgetMicros / 1_000_000).toFixed(2)}/day`);
 }
+
