@@ -22,6 +22,18 @@ export interface SpyFuDomainCompetitor {
   overlapScore: number;
 }
 
+export interface SpyFuKeywordStats {
+  keyword: string;
+  searchVolume: number | null;
+  liveSearchVolume: number | null;
+  broadCostPerClick: number | null;
+  phraseCostPerClick: number | null;
+  exactCostPerClick: number | null;
+  paidCompetitors: number | null;
+  rankingDifficulty: number | null;
+  percentMobileSearches: number | null;
+}
+
 /** Top paid PPC keywords for a competitor domain, sorted by search volume. */
 export async function getDomainPaidKeywords(
   domain: string,
@@ -46,8 +58,7 @@ export async function getDomainPaidKeywords(
 }
 
 /**
- * PPC competitors for a domain — domains with the most overlapping paid keywords.
- * Use this to discover who competes with a given domain in paid search.
+ * PPC competitors for a domain - domains with the most overlapping paid keywords.
  */
 export async function getDomainPpcCompetitors(
   domain: string,
@@ -66,4 +77,32 @@ export async function getDomainPpcCompetitors(
       overlapScore: d.rank ?? 0,
     })),
   };
+}
+
+/**
+ * Get CPC + volume stats for a list of exact keywords.
+ * Endpoint: GET /v2/related/getKeywordInformation
+ *
+ * NOTE: CPC fields (broadCostPerClick, exactCostPerClick) are often null for niche/low-volume
+ * keywords. Always check for null. If null, fall back to Google Keyword Planner data.
+ */
+export async function getKeywordStats(
+  keywords: string[],
+  countryCode = "US"
+): Promise<SpyFuKeywordStats[]> {
+  const url = `${BASE}/keyword_api/v2/related/getKeywordInformation?api_key=${API_KEY()}&${keywords.map(k => `keywords=${encodeURIComponent(k)}`).join("&")}&countryCode=${countryCode}`;
+  const r = await fetch(url);
+  if (!r.ok) throw new Error(`SpyFu getKeywordStats error ${r.status}: ${await r.text()}`);
+  const j = await r.json();
+  return (j.results ?? []).map((kw: any) => ({
+    keyword: kw.keyword,
+    searchVolume: kw.searchVolume ?? null,
+    liveSearchVolume: kw.liveSearchVolume ?? null,
+    broadCostPerClick: kw.broadCostPerClick ?? null,
+    phraseCostPerClick: kw.phraseCostPerClick ?? null,
+    exactCostPerClick: kw.exactCostPerClick ?? null,
+    paidCompetitors: kw.paidCompetitors ?? null,
+    rankingDifficulty: kw.rankingDifficulty ?? null,
+    percentMobileSearches: kw.percentMobileSearches ?? null,
+  }));
 }

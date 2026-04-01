@@ -26,7 +26,7 @@ import {
 } from '../google-ads/keywords.js';
 import { getCustomer } from '../google-ads/client.js';
 import { getKeywordMetrics } from '../google-ads/keyword-planner.js';
-import { getDomainPaidKeywords, getDomainPpcCompetitors } from '../google-ads/spyfu.js';
+import { getDomainPaidKeywords, getDomainPpcCompetitors, getKeywordStats } from '../google-ads/spyfu.js';
 import { ingestSuggestions } from '../knowledge/suggest.js';
 import { query } from '../db/pool.js';
 import { searchKnowledge } from '../knowledge/search.js';
