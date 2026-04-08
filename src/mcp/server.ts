@@ -515,17 +515,28 @@ export function createServer(): McpServer {
       description: 'Generate tile icon variants into a staging folder (does not write to static/img/lp).',
       inputSchema: {
         slug: z.string().describe('LP slug, e.g. construction-turbocharger'),
-        prompts: z.array(z.string()).length(3).describe('Three tile prompts in order: tile1, tile2, tile3'),
+        prompt1: z.string().optional().describe('Tile 1 prompt'),
+        prompt2: z.string().optional().describe('Tile 2 prompt'),
+        prompt3: z.string().optional().describe('Tile 3 prompt'),
+        prompts: z.array(z.string()).length(3).optional().describe('Three tile prompts in order: tile1, tile2, tile3'),
         count: z.number().int().min(1).max(8).optional().default(8).describe('Variants per tile (default 8)'),
       },
     },
-    async ({ slug, prompts, count = 8 }) => {
+    async ({ slug, prompt1, prompt2, prompt3, prompts, count = 8 }) => {
       try {
         const key = getOpenAIImageKey();
         const python = 'C:\\Python314\\python.exe';
         const script = getImageGenScriptPath();
         const stagingRoot = getStagingRoot(slug);
         fs.mkdirSync(stagingRoot, { recursive: true });
+
+        const resolvedPrompts = prompts && prompts.length === 3
+          ? prompts
+          : [prompt1, prompt2, prompt3].filter((p): p is string => typeof p === 'string');
+
+        if (resolvedPrompts.length !== 3) {
+          throw new Error('Provide exactly 3 prompts via prompts[] or prompt1/prompt2/prompt3');
+        }
 
         const outputs: Array<{ tile: number; outDir: string }> = [];
         for (let i = 0; i < 3; i++) {
@@ -539,7 +550,7 @@ export function createServer(): McpServer {
             '--background', 'transparent',
             '--count', String(count),
             '--out-dir', outDir,
-            '--prompt', prompts[i],
+            '--prompt', resolvedPrompts[i],
           ], { env: { ...process.env, OPENAI_API_KEY: key }, maxBuffer: 10 * 1024 * 1024 });
           outputs.push({ tile: i + 1, outDir });
         }
