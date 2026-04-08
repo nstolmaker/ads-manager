@@ -574,7 +574,7 @@ export function createServer(): McpServer {
           script,
           '--model', 'gpt-image-1',
           '--quality', 'high',
-          '--size', '1792x1024',
+          '--size', '1536x1024',
           '--count', String(count),
           '--out-dir', outDir,
           '--prompt', prompt,
