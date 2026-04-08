@@ -27,11 +27,7 @@ import {
 import { getCustomer } from '../google-ads/client.js';
 import { getKeywordMetrics } from '../google-ads/keyword-planner.js';
 import { getDomainPaidKeywords, getDomainPpcCompetitors, getKeywordStats } from '../google-ads/spyfu.js';
-import { ingestSuggestions } from '../knowledge/suggest.js';
 import { query } from '../db/pool.js';
-import { searchKnowledge } from '../knowledge/search.js';
-import { listSources, deleteSource } from '../knowledge/sources.js';
-import { scanAndIngest } from '../knowledge/ingest.js';
 
 const NOAH_DISCORD_ID = '626600779666423819';
 
@@ -278,82 +274,6 @@ export function createServer(): McpServer {
     },
   );
 
-  // ── Knowledge base tools ──────────────────────────────
-
-  server.registerTool(
-    'knowledge_search',
-    {
-      description: 'Search the knowledge base using semantic similarity',
-      inputSchema: {
-        query: z.string().describe('Search query text'),
-        knowledgeType: z.string().optional().describe('Filter by knowledge type (e.g. marketing, strategy)'),
-        limit: z.number().optional().default(5).describe('Max results to return'),
-      },
-    },
-    async ({ query, knowledgeType, limit }) => {
-      try {
-        const results = await searchKnowledge(query, knowledgeType, limit);
-        return { content: [{ type: 'text', text: JSON.stringify(results, null, 2) }] };
-      } catch (err: any) {
-        return { content: [{ type: 'text', text: `Error searching knowledge: ${err.message}` }], isError: true };
-      }
-    },
-  );
-
-  server.registerTool(
-    'knowledge_list_sources',
-    {
-      description: 'List all ingested knowledge base sources with chunk counts',
-    },
-    async () => {
-      try {
-        const sources = await listSources();
-        return { content: [{ type: 'text', text: JSON.stringify(sources, null, 2) }] };
-      } catch (err: any) {
-        return { content: [{ type: 'text', text: `Error listing sources: ${err.message}` }], isError: true };
-      }
-    },
-  );
-
-  server.registerTool(
-    'knowledge_ingest',
-    {
-      description: 'Scan the knowledge source directory and ingest all PDFs',
-      inputSchema: {
-        knowledgeType: z.string().describe('Knowledge type label for ingested content (e.g. marketing, strategy)'),
-      },
-    },
-    async ({ knowledgeType }) => {
-      try {
-        const sourceDir = process.env.KNOWLEDGE_SOURCE_DIR || './books';
-        const results = await scanAndIngest(sourceDir, knowledgeType);
-        return { content: [{ type: 'text', text: JSON.stringify(results, null, 2) }] };
-      } catch (err: any) {
-        return { content: [{ type: 'text', text: `Error ingesting knowledge: ${err.message}` }], isError: true };
-      }
-    },
-  );
-
-  server.registerTool(
-    'knowledge_delete_source',
-    {
-      description: 'Delete all embeddings for a given source',
-      inputSchema: {
-        source: z.string().describe('Source name to delete'),
-      },
-    },
-    async ({ source }) => {
-      try {
-        const deleted = await deleteSource(source);
-        return { content: [{ type: 'text', text: JSON.stringify({ source, deleted }) }] };
-      } catch (err: any) {
-        return { content: [{ type: 'text', text: `Error deleting source: ${err.message}` }], isError: true };
-      }
-    },
-  );
-
-  
-
   // -- Keyword Planner tool ----------------------------------------
 
   server.registerTool(
@@ -361,7 +281,7 @@ export function createServer(): McpServer {
     {
       description: 'Get historical search volume, competition level, and CPC bid range for a list of keywords. Use before add_keywords to prioritize by ROI.',
       inputSchema: {
-        keywords: z.array(z.string()).describe('Keywords to look up � plain text, no match type brackets'),
+        keywords: z.array(z.string()).describe('Keywords to look up � plain text, no match type brackets'),
       },
     },
     async ({ keywords }) => {
@@ -381,28 +301,6 @@ export function createServer(): McpServer {
       }
     },
   );
-  // -- Google Suggest ingest tool
-  server.registerTool(
-    'knowledge_ingest_suggest',
-    {
-      title: 'Ingest Google Suggest: Buyer Language',
-      description: 'Pulls Google Autocomplete suggestions for a seed keyword, filters to buyer-intent terms, and ingests them into the knowledge base as buyer_language chunks. Use this before keyword_brainstorm to populate the KB with real search language for a topic.',
-      inputSchema: {
-        seed: z.string().describe('Seed keyword to expand, e.g. "ai consulting for small business"'),
-        personaSlug: z.string().optional().describe('Optional persona slug to tag the results with (e.g. "ai-department")'),
-      },
-    },
-    async ({ seed, personaSlug }) => {
-      const result = await ingestSuggestions(seed, personaSlug);
-      return {
-        content: [{
-          type: 'text',
-          text: JSON.stringify(result, null, 2),
-        }],
-      };
-    }
-  );
-
   // -- SpyFu tools
   server.registerTool(
     'spyfu_domain_keywords',
@@ -429,7 +327,7 @@ export function createServer(): McpServer {
     'spyfu_domain_competitors',
     {
       title: 'SpyFu: Domain PPC Competitors',
-      description: 'Returns the top PPC competitors for a domain � other domains bidding on overlapping paid keywords. Use this to discover the competitive landscape around a given domain.',
+      description: 'Returns the top PPC competitors for a domain � other domains bidding on overlapping paid keywords. Use this to discover the competitive landscape around a given domain.',
       inputSchema: {
         domain: z.string().describe('Domain to find competitors for, e.g. "slalom.com"'),
         limit: z.number().int().min(1).max(100).default(20).optional().describe('Number of competitors to return (default 20)'),
@@ -502,7 +400,7 @@ export function createServer(): McpServer {
         slug: z.string().describe('URL-safe unique identifier e.g. my-new-persona'),
         name: z.string().describe('Human-readable persona name'),
         lpUrl: z.string().describe('Landing page URL'),
-        data: z.string().describe('Persona context as JSON string � seed idea, pain points, audience, etc.'),
+        data: z.string().describe('Persona context as JSON string � seed idea, pain points, audience, etc.'),
         budgetFloorPct: z.number().optional().default(0.1).describe('Minimum budget share (0.1 = 10%)'),
       },
     },
