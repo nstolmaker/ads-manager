@@ -544,7 +544,7 @@ export function createServer(): McpServer {
           fs.mkdirSync(outDir, { recursive: true });
           await execFileAsync(python, [
             script,
-            '--model', 'gpt-image-1',
+            '--model', 'gpt-image-1.5',
             '--quality', 'high',
             '--size', '1024x1024',
             '--background', 'transparent',
@@ -583,7 +583,7 @@ export function createServer(): McpServer {
 
         await execFileAsync(python, [
           script,
-          '--model', 'gpt-image-1',
+          '--model', 'gpt-image-1.5',
           '--quality', 'high',
           '--size', '1536x1024',
           '--count', String(count),
