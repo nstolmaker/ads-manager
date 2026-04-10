@@ -1,0 +1,434 @@
+[
+  {
+    "keyword": "ai for business",
+    "monthlySearches": 49500,
+    "competition": "MEDIUM",
+    "competitionIndex": 34,
+    "lowTopOfPage": 0.58,
+    "highTopOfPage": 5.08
+  },
+  {
+    "keyword": "chatgpt for business",
+    "monthlySearches": 27100,
+    "competition": "LOW",
+    "competitionIndex": 17,
+    "lowTopOfPage": 1.86,
+    "highTopOfPage": 17.9
+  },
+  {
+    "keyword": "ai for healthcare",
+    "monthlySearches": 27100,
+    "competition": "LOW",
+    "competitionIndex": 30,
+    "lowTopOfPage": 1.76,
+    "highTopOfPage": 8.57
+  },
+  {
+    "keyword": "ai for accounting",
+    "monthlySearches": 14800,
+    "competition": "MEDIUM",
+    "competitionIndex": 46,
+    "lowTopOfPage": 3.73,
+    "highTopOfPage": 20.15
+  },
+  {
+    "keyword": "ai for finance",
+    "monthlySearches": 12100,
+    "competition": "MEDIUM",
+    "competitionIndex": 47,
+    "lowTopOfPage": 3.73,
+    "highTopOfPage": 20.88
+  },
+  {
+    "keyword": "ai for hr",
+    "monthlySearches": 5400,
+    "competition": "LOW",
+    "competitionIndex": 29,
+    "lowTopOfPage": 1.12,
+    "highTopOfPage": 35.38
+  },
+  {
+    "keyword": "ai for developers",
+    "monthlySearches": 3600,
+    "competition": "MEDIUM",
+    "competitionIndex": 34,
+    "lowTopOfPage": 6.33,
+    "highTopOfPage": 31.16
+  },
+  {
+    "keyword": "ai for attorneys",
+    "monthlySearches": 3600,
+    "competition": "MEDIUM",
+    "competitionIndex": 60,
+    "lowTopOfPage": 11.15,
+    "highTopOfPage": 61.21
+  },
+  {
+    "keyword": "ai for construction",
+    "monthlySearches": 2900,
+    "competition": "MEDIUM",
+    "competitionIndex": 42,
+    "lowTopOfPage": 3.38,
+    "highTopOfPage": 16.7
+  },
+  {
+    "keyword": "claude for financial services",
+    "monthlySearches": 1900,
+    "competition": "MEDIUM",
+    "competitionIndex": 43,
+    "lowTopOfPage": 1.28,
+    "highTopOfPage": 13.69
+  },
+  {
+    "keyword": "ai for business leaders",
+    "monthlySearches": 720,
+    "competition": "LOW",
+    "competitionIndex": 25,
+    "lowTopOfPage": 2.68,
+    "highTopOfPage": 27.86
+  },
+  {
+    "keyword": "claude for healthcare",
+    "monthlySearches": 720,
+    "competition": "MEDIUM",
+    "competitionIndex": 43,
+    "lowTopOfPage": 1.11,
+    "highTopOfPage": 12.82
+  },
+  {
+    "keyword": "claude for finance",
+    "monthlySearches": 720,
+    "competition": "MEDIUM",
+    "competitionIndex": 51,
+    "lowTopOfPage": 1.29,
+    "highTopOfPage": 13.06
+  },
+  {
+    "keyword": "ai for doctors",
+    "monthlySearches": 720,
+    "competition": "MEDIUM",
+    "competitionIndex": 61,
+    "lowTopOfPage": 2.42,
+    "highTopOfPage": 8.17
+  },
+  {
+    "keyword": "claude for business",
+    "monthlySearches": 590,
+    "competition": "MEDIUM",
+    "competitionIndex": 45,
+    "lowTopOfPage": 1.12,
+    "highTopOfPage": 20.83
+  },
+  {
+    "keyword": "chatgpt for doctors",
+    "monthlySearches": 590,
+    "competition": "MEDIUM",
+    "competitionIndex": 59,
+    "lowTopOfPage": 2.04,
+    "highTopOfPage": 7.2
+  },
+  {
+    "keyword": "claude for enterprise",
+    "monthlySearches": 480,
+    "competition": "LOW",
+    "competitionIndex": 25,
+    "lowTopOfPage": 5.05,
+    "highTopOfPage": 24.04
+  },
+  {
+    "keyword": "chatgpt for healthcare",
+    "monthlySearches": 390,
+    "competition": "MEDIUM",
+    "competitionIndex": 47,
+    "lowTopOfPage": 2.94,
+    "highTopOfPage": 13.65
+  },
+  {
+    "keyword": "chatgpt for finance",
+    "monthlySearches": 320,
+    "competition": "MEDIUM",
+    "competitionIndex": 47,
+    "lowTopOfPage": 5.42,
+    "highTopOfPage": 30.17
+  },
+  {
+    "keyword": "chatgpt for accounting",
+    "monthlySearches": 260,
+    "competition": "LOW",
+    "competitionIndex": 31,
+    "lowTopOfPage": 4.13,
+    "highTopOfPage": 21.59
+  },
+  {
+    "keyword": "chatgpt for business pricing",
+    "monthlySearches": 260,
+    "competition": "MEDIUM",
+    "competitionIndex": 36,
+    "lowTopOfPage": 1.33,
+    "highTopOfPage": 12.41
+  },
+  {
+    "keyword": "ai for financial advisors",
+    "monthlySearches": 260,
+    "competition": "MEDIUM",
+    "competitionIndex": 41,
+    "lowTopOfPage": 9.22,
+    "highTopOfPage": 32
+  },
+  {
+    "keyword": "chatgpt for business plans",
+    "monthlySearches": 210,
+    "competition": "LOW",
+    "competitionIndex": 26,
+    "lowTopOfPage": 3.34,
+    "highTopOfPage": 30.97
+  },
+  {
+    "keyword": "chatgpt for enterprise",
+    "monthlySearches": 210,
+    "competition": "LOW",
+    "competitionIndex": 33,
+    "lowTopOfPage": 3.95,
+    "highTopOfPage": 22.43
+  },
+  {
+    "keyword": "ai for construction estimating",
+    "monthlySearches": 210,
+    "competition": "MEDIUM",
+    "competitionIndex": 65,
+    "lowTopOfPage": 5.25,
+    "highTopOfPage": 24.08
+  },
+  {
+    "keyword": "chatgpt for hr",
+    "monthlySearches": 140,
+    "competition": "LOW",
+    "competitionIndex": 24,
+    "lowTopOfPage": 6.75,
+    "highTopOfPage": 25
+  },
+  {
+    "keyword": "claude for developers",
+    "monthlySearches": 110,
+    "competition": "LOW",
+    "competitionIndex": 29,
+    "lowTopOfPage": 2.66,
+    "highTopOfPage": 20.94
+  },
+  {
+    "keyword": "chatgpt for developers",
+    "monthlySearches": 110,
+    "competition": "MEDIUM",
+    "competitionIndex": 34,
+    "lowTopOfPage": 5.24,
+    "highTopOfPage": 36.62
+  },
+  {
+    "keyword": "llm for foreign lawyers",
+    "monthlySearches": 90,
+    "competition": "MEDIUM",
+    "competitionIndex": 42,
+    "lowTopOfPage": 4.25,
+    "highTopOfPage": 17.41
+  },
+  {
+    "keyword": "claude for hr",
+    "monthlySearches": 90,
+    "competition": "MEDIUM",
+    "competitionIndex": 48,
+    "lowTopOfPage": 8.98,
+    "highTopOfPage": 42.45
+  },
+  {
+    "keyword": "ai for java developers",
+    "monthlySearches": 90,
+    "competition": "MEDIUM",
+    "competitionIndex": 61,
+    "lowTopOfPage": 1.29,
+    "highTopOfPage": 9.36
+  },
+  {
+    "keyword": "claude for accounting",
+    "monthlySearches": 90,
+    "competition": "MEDIUM",
+    "competitionIndex": 62,
+    "lowTopOfPage": 1.64,
+    "highTopOfPage": 25.42
+  },
+  {
+    "keyword": "llm for healthcare",
+    "monthlySearches": 70,
+    "competition": "LOW",
+    "competitionIndex": 21,
+    "lowTopOfPage": 1.85,
+    "highTopOfPage": 7.26
+  },
+  {
+    "keyword": "claude for business pricing",
+    "monthlySearches": 70,
+    "competition": "LOW",
+    "competitionIndex": 24,
+    "lowTopOfPage": 5.04,
+    "highTopOfPage": 31.6
+  },
+  {
+    "keyword": "chatgpt for attorneys",
+    "monthlySearches": 50,
+    "competition": "HIGH",
+    "competitionIndex": 70,
+    "lowTopOfPage": 12.28,
+    "highTopOfPage": 47.34
+  },
+  {
+    "keyword": "llm for business",
+    "monthlySearches": 40,
+    "competition": "LOW",
+    "competitionIndex": 31,
+    "lowTopOfPage": 4.07,
+    "highTopOfPage": 16.45
+  },
+  {
+    "keyword": "chatgpt for healthcare professionals",
+    "monthlySearches": 40,
+    "competition": "MEDIUM",
+    "competitionIndex": 51,
+    "lowTopOfPage": 4.37,
+    "highTopOfPage": 20.75
+  },
+  {
+    "keyword": "llm for finance",
+    "monthlySearches": 30,
+    "competition": "LOW",
+    "competitionIndex": 24,
+    "lowTopOfPage": 4.46,
+    "highTopOfPage": 28.79
+  },
+  {
+    "keyword": "chatgpt for business login",
+    "monthlySearches": 30,
+    "competition": "MEDIUM",
+    "competitionIndex": 39,
+    "lowTopOfPage": 2.06,
+    "highTopOfPage": 25.4
+  },
+  {
+    "keyword": "claude for financial services pricing",
+    "monthlySearches": 30,
+    "competition": "MEDIUM",
+    "competitionIndex": 53,
+    "lowTopOfPage": 1.28,
+    "highTopOfPage": 16.76
+  },
+  {
+    "keyword": "llm for non lawyers",
+    "monthlySearches": 30,
+    "competition": "HIGH",
+    "competitionIndex": 72,
+    "lowTopOfPage": 4.03,
+    "highTopOfPage": 13.08
+  },
+  {
+    "keyword": "llm for doctors",
+    "monthlySearches": 20,
+    "competition": "LOW",
+    "competitionIndex": 28,
+    "lowTopOfPage": 1.58,
+    "highTopOfPage": 7.61
+  },
+  {
+    "keyword": "chatgpt for doctors startup",
+    "monthlySearches": 20,
+    "competition": "LOW",
+    "competitionIndex": 32,
+    "lowTopOfPage": 1.22,
+    "highTopOfPage": 9.82
+  },
+  {
+    "keyword": "claude for business plan",
+    "monthlySearches": 10,
+    "competition": "LOW",
+    "competitionIndex": 31,
+    "lowTopOfPage": 4.64,
+    "highTopOfPage": 38.97
+  },
+  {
+    "keyword": "claude for healthcare & life sciences",
+    "monthlySearches": 10,
+    "competition": "LOW",
+    "competitionIndex": 32,
+    "lowTopOfPage": 5.15,
+    "highTopOfPage": 20.1
+  },
+  {
+    "keyword": "claude for healthcare pricing",
+    "monthlySearches": 10,
+    "competition": "MEDIUM",
+    "competitionIndex": 35,
+    "lowTopOfPage": 2.3,
+    "highTopOfPage": 12.78
+  },
+  {
+    "keyword": "claude for business analysis",
+    "monthlySearches": 10,
+    "competition": "MEDIUM",
+    "competitionIndex": 36,
+    "lowTopOfPage": 1.98,
+    "highTopOfPage": 15.25
+  },
+  {
+    "keyword": "llm for accounting",
+    "monthlySearches": 10,
+    "competition": "MEDIUM",
+    "competitionIndex": 49,
+    "lowTopOfPage": 2.13,
+    "highTopOfPage": 12.2
+  },
+  {
+    "keyword": "claude for app development",
+    "monthlySearches": 10,
+    "competition": "MEDIUM",
+    "competitionIndex": 54,
+    "lowTopOfPage": 4.68,
+    "highTopOfPage": 21.56
+  },
+  {
+    "keyword": "llm for foreign lawyers online",
+    "monthlySearches": 10,
+    "competition": "MEDIUM",
+    "competitionIndex": 61,
+    "lowTopOfPage": 6.88,
+    "highTopOfPage": 61.11
+  },
+  {
+    "keyword": "claude for attorneys",
+    "monthlySearches": 10,
+    "competition": "MEDIUM",
+    "competitionIndex": 66,
+    "lowTopOfPage": 11.43,
+    "highTopOfPage": 48.32
+  },
+  {
+    "keyword": "llm for app development",
+    "monthlySearches": 0,
+    "competition": "UNSPECIFIED",
+    "competitionIndex": 0,
+    "lowTopOfPage": 0,
+    "highTopOfPage": 0
+  },
+  {
+    "keyword": "llm for home automation",
+    "monthlySearches": 0,
+    "competition": "UNSPECIFIED",
+    "competitionIndex": 0,
+    "lowTopOfPage": 0,
+    "highTopOfPage": 0
+  },
+  {
+    "keyword": "llm for java developers",
+    "monthlySearches": 0,
+    "competition": "UNSPECIFIED",
+    "competitionIndex": 0,
+    "lowTopOfPage": 0,
+    "highTopOfPage": 0
+  }
+]
