@@ -48,7 +48,7 @@ export async function loadPersonaCampaigns(): Promise<PersonaCampaign[]> {
     FROM personas p
     JOIN campaigns c ON c.persona_id = p.id
     WHERE p.status = 'active'
-      AND c.status != 'removed'
+      AND c.status = 'enabled'
     ORDER BY p.id
   `);
 
@@ -104,12 +104,12 @@ export async function analyzePersona(pc: PersonaCampaign): Promise<AnalysisConte
                 THEN ROUND(SUM(clicks)::numeric / SUM(impressions) * 100, 2)
                 ELSE 0 END AS ctr_pct
     FROM keyword_snapshots
-    WHERE persona_id = $1
-      AND snapshot_date >= $2
+    WHERE campaign_id = $1
+      AND snapshot_date = $2
     GROUP BY keyword, match_type
     ORDER BY conversions DESC, clicks DESC
     LIMIT 10
-  `, [pc.personaId, window.startDate]);
+  `, [pc.campaignDbId, window.endDate]);
 
   const bottomKeywords = await query<any>(`
     SELECT keyword, match_type,
@@ -118,13 +118,13 @@ export async function analyzePersona(pc: PersonaCampaign): Promise<AnalysisConte
            SUM(conversions) AS conversions,
            SUM(cost_micros) / 1000000.0 AS cost_usd
     FROM keyword_snapshots
-    WHERE persona_id = $1
-      AND snapshot_date >= $2
+    WHERE campaign_id = $1
+      AND snapshot_date = $2
     GROUP BY keyword, match_type
     HAVING SUM(impressions) > 5 AND SUM(conversions) = 0
     ORDER BY cost_usd DESC
     LIMIT 10
-  `, [pc.personaId, window.startDate]);
+  `, [pc.campaignDbId, window.endDate]);
 
   const topAds = await query<any>(`
     SELECT google_ad_id, headline_1, headline_2, description_1,
@@ -135,12 +135,12 @@ export async function analyzePersona(pc: PersonaCampaign): Promise<AnalysisConte
                 THEN ROUND(SUM(clicks)::numeric / SUM(impressions) * 100, 2)
                 ELSE 0 END AS ctr_pct
     FROM ad_snapshots
-    WHERE persona_id = $1
-      AND snapshot_date >= $2
+    WHERE campaign_id = $1
+      AND snapshot_date = $2
     GROUP BY google_ad_id, headline_1, headline_2, description_1
     ORDER BY conversions DESC, ctr_pct DESC
     LIMIT 5
-  `, [pc.personaId, window.startDate]);
+  `, [pc.campaignDbId, window.endDate]);
 
   const bottomAds = await query<any>(`
     SELECT google_ad_id, headline_1, headline_2, description_1,
@@ -148,13 +148,13 @@ export async function analyzePersona(pc: PersonaCampaign): Promise<AnalysisConte
            SUM(clicks) AS clicks,
            SUM(conversions) AS conversions
     FROM ad_snapshots
-    WHERE persona_id = $1
-      AND snapshot_date >= $2
+    WHERE campaign_id = $1
+      AND snapshot_date = $2
     GROUP BY google_ad_id, headline_1, headline_2, description_1
     HAVING SUM(impressions) > 10 AND SUM(conversions) = 0
     ORDER BY SUM(cost_micros) DESC
     LIMIT 5
-  `, [pc.personaId, window.startDate]);
+  `, [pc.campaignDbId, window.endDate]);
 
   tracker.log(`[analyze] ${pc.personaSlug} `);
 

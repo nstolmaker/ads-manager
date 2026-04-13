@@ -57,6 +57,12 @@ export async function snapshotKeywords(
     return 0;
   }
 
+  await query(
+    `DELETE FROM keyword_snapshots
+     WHERE campaign_id = $1 AND snapshot_date = $2`,
+    [campaignDbId, window.endDate],
+  );
+
   let saved = 0;
   for (const row of rows) {
     const kw = row.ad_group_criterion?.keyword;
@@ -120,6 +126,12 @@ export async function snapshotAds(
     console.log(`[reporting] No ad data for campaign ${googleCampaignId} (test account — expected)`);
     return 0;
   }
+
+  await query(
+    `DELETE FROM ad_snapshots
+     WHERE campaign_id = $1 AND snapshot_date = $2`,
+    [campaignDbId, window.endDate],
+  );
 
   let saved = 0;
   for (const row of rows) {
