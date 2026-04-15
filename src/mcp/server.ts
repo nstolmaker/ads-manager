@@ -383,6 +383,27 @@ export function createServer(): McpServer {
     }
   );
 
+  server.registerTool(
+    'spyfu_keyword_stats',
+    {
+      title: 'SpyFu: Keyword Stats',
+      description: 'Returns search volume, CPC (broad/exact), paid competitors, and ranking difficulty for a list of keywords. NOTE: CPC fields are often null for niche/low-volume keywords — fall back to keyword_planner if null.',
+      inputSchema: {
+        keywords: z.array(z.string()).describe('Keywords to look up'),
+        countryCode: z.string().default('US').optional().describe('Country code (default: US)'),
+      },
+    },
+    async ({ keywords, countryCode = 'US' }) => {
+      const result = await getKeywordStats(keywords, countryCode);
+      return {
+        content: [{
+          type: 'text',
+          text: JSON.stringify(result, null, 2),
+        }],
+      };
+    }
+  );
+
   // -- Persona tools ---------------------------------------------------------
 
   server.registerTool(
