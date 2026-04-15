@@ -1,10 +1,10 @@
 module.exports = {
   apps: [
     {
-      // Webhook server — always running, receives Claude's approval callbacks
-      name: 'ads-webhook',
+      // Knowledge/admin UI — always running for ads-manager local operations
+      name: 'ads-manager-ui',
       script: 'node_modules/tsx/dist/cli.mjs',
-      args: 'src/discord/webhook.ts',
+      args: 'src/knowledge/ui/server.ts',
       interpreter: 'node',
       cwd: __dirname,
       watch: false,
